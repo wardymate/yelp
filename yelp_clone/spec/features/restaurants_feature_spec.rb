@@ -1,14 +1,19 @@
 require 'rails_helper'
 
 def sign_up
-
   visit('/')
-    click_link('Sign up')
-    fill_in('Email', with: 'test@example.com')
-    fill_in('Password', with: 'testtest')
-    fill_in('Password confirmation', with: 'testtest')
-    click_button('Sign up')
+  click_link('Sign up')
+  fill_in('Email', with: 'test@example.com')
+  fill_in('Password', with: 'testtest')
+  fill_in('Password confirmation', with: 'testtest')
+  click_button('Sign up')
+end
 
+def user_create_restaurant_KFC
+  visit '/restaurants'
+  click_link 'Add a restaurant'
+  fill_in 'Name', with: 'KFC'
+  click_button 'Create Restaurant'
 end
 
 
@@ -39,10 +44,7 @@ feature 'restaurants' do
   context 'creating restaurants' do
     scenario 'prompts user to fill out a form, then displays the new restaurant' do
       sign_up
-      visit '/restaurants'
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'KFC'
-      click_button 'Create Restaurant'
+      user_create_restaurant_KFC
       expect(page).to have_content 'KFC'
       expect(current_path).to eq '/restaurants'
     end
@@ -77,11 +79,21 @@ feature 'restaurants' do
 
   context 'editing restaurants' do
 
-    before {Restaurant.create name: 'KFC'}
+    before{Restaurant.create name:'Burger King'}
 
-    scenario 'let a user edit a restaurant' do
+    scenario 'does not let a user edit a restaurant that they did not create' do
       sign_up
       visit '/restaurants'
+      user_create_restaurant_KFC
+      click_link 'Edit Burger King'
+      expect(current_path).to eq '/restaurants'
+      expect(page).to have_content 'Can only edit restaurants you have created'
+    end
+
+    scenario 'lets a user edit a restaurant that they created' do
+      sign_up
+      visit '/restaurants'
+      user_create_restaurant_KFC
       click_link 'Edit KFC'
       fill_in 'Name', with: 'Kentucky Fried Chicken'
       click_button 'Update Restaurant'

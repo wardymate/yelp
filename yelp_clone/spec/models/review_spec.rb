@@ -7,4 +7,6 @@ describe Review, :type => :model do
     expect(review).to have(1).error_on(:rating)
   end
 
+  it{is_expected.to belong_to :user}
+
 end
