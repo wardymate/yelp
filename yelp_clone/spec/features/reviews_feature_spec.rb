@@ -5,12 +5,10 @@ feature 'reviewing' do
 
   def add_review
     visit '/restaurants'
-     click_link 'Review Burger King'
-     fill_in "Thoughts", with: "so so"
-     select '3', from: 'Rating'
-     click_button 'Leave Review'
-     expect(current_path).to eq '/restaurants'
-     expect(page).to have_content('so so')
+    click_link 'Review Burger King'
+    fill_in "Thoughts", with: "so so"
+    select '3', from: 'Rating'
+    click_button 'Leave Review'
   end
 
   def sign_up
@@ -20,12 +18,23 @@ feature 'reviewing' do
     fill_in('Password', with: 'testtest')
     fill_in('Password confirmation', with: 'testtest')
     click_button('Sign up')
-end
+  end
 
   scenario 'allows users to leave a review using a form' do
-     sign_up
-     add_review
+    sign_up
+    add_review
+    expect(current_path).to eq '/restaurants'
+    expect(page).to have_content('so so')
   end
+
+  scenario 'does not allow users to leave a review to a restaurant they have already reviewed' do
+    sign_up
+    add_review
+    add_review
+    expect(current_path).to eq '/restaurants'
+    expect(page).to have_content 'Can only review a restaurant once!'
+  end
+
 
   scenario 'deletes a review when a restaurant is deleted' do
     sign_up
