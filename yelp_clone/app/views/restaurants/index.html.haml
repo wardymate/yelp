@@ -8,9 +8,11 @@
       %ul
         - restaurant.reviews.each do |review|
           %li
-            = review.thoughts
-            = review.rating
-            /5
+            #{review.thoughts} Average rating: #{star_rating(restaurant.average_rating)}
+            = link_to "Endorse", review_endorsements_path(review), class: 'endorsements-link'
+            %span.endorsements_count= review.endorsements.count
+            = 'endorsement'.pluralize review.endorsements.count
+
     - else
       %p No reviews
     %h2= link_to restaurant.name, restaurant_path(restaurant)
